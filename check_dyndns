@@ -1,0 +1,41 @@
+#!/bin/bash
+
+function main()
+{
+    IP=$(detectCurrentPublicIP)
+    ENTRY=$(detectCurrentDNSEntry)
+
+    if [ "$IP" != "$ENTRY" ]
+    then
+        exitCritical "Detected IP is $IP but the DNS points to $ENTRY"
+    else
+        echo "OK - Detected IP $IP matches with the DNS"
+        exit 0
+    fi
+}
+
+function exitCritical()
+{
+    echo "CRITICAL - $1"
+    exit 2
+}
+
+function detectCurrentPublicIP()
+{
+    local IP=`curl -s4 http://proxies.veloc1ty.de/check.php`
+
+    if [ $? -ne 0 ]
+    then
+        exitCritical "cURL failed to connect to webservice"
+    else
+        echo $IP
+    fi
+}
+
+function detectCurrentDNSEntry()
+{
+    local entry=`dig +short -4 home.veloc1ty.de`
+    echo $entry
+}
+
+main
