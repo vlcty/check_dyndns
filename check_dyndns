@@ -22,14 +22,8 @@ function exitCritical()
 
 function detectCurrentPublicIP()
 {
-    local IP=`curl -s4 http://proxies.veloc1ty.de/check.php`
-
-    if [ $? -ne 0 ]
-    then
-        exitCritical "cURL failed to connect to webservice"
-    else
-        echo $IP
-    fi
+    local IP=`dig -4 +short myip.opendns.com @resolver1.opendns.com`
+    echo $IP
 }
 
 function detectCurrentDNSEntry()
